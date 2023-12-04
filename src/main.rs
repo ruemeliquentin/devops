@@ -4,6 +4,7 @@ use std::{
     net::{TcpListener, TcpStream},
     thread,
 };
+use gethostname::gethostname;
 
 fn main() {
     let address = match env::var("PING_LISTEN_PORT") {
@@ -22,6 +23,7 @@ fn main() {
 }
 
 fn handle_connection(mut stream: TcpStream) {
+    println!("Hostname: {:?}", gethostname());
     // Retrieve the request from connection' stream
     let buf_reader = BufReader::new(&mut stream);
     let request: Vec<_> = buf_reader
@@ -30,7 +32,7 @@ fn handle_connection(mut stream: TcpStream) {
         .take_while(|line| !line.is_empty())
         .collect();
 
-    println!("REQUEST : {}", request[0]);
+    println!("REQUEST : {}", request[0]);  
 
     // Only if the requested URL is /ping and HTTP verb GET
     if request[0] == "GET /ping HTTP/1.1" || request[0] == "GET /ping HTTP/1.0" {
